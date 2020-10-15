@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- namespace用来指定是哪一个mapper， -->
+<!-- id:用来配合namespace用来定位sql语句的，在同一个mapper之中不能重复 -->
+<!-- resultType：用来指定查询语句的结果类型，如果查询出来的是多条记录会自动包装为对应的list集合，要求model的属性名需要与数据库的列名一致 -->
+
+
+<mapper namespace="com.zhiyou.dao.UserDao">
+<cache type="com.zhiyou.redis.RedisCache"></cache>
+	<!-- 添加 -->
+	<insert id="add" parameterType="user">
+		insert into user
+		values(#{id},#{name},#{password},#{money}
+	</insert>
+	<!-- 删除 -->
+	<delete id="delete" parameterType="user">
+		delete from user where
+		id=#{id};
+	</delete>
+	<!-- 更新 -->
+	<update id="update" parameterType="user">
+		update user
+		<set>
+			<if test="name!=null">
+				name=#{name}
+			</if>
+			<if test="password!=null">
+				,password=#{password}
+			</if>
+			<if test="money!=null">
+				,money=#{money}
+			</if>
+			
+		</set>
+		where id = #{id}
+	</update>
+	<!-- 结果集 -->
+	<resultMap type="com.zhiyou.model.User" id="UserMap">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="password" property="password" />
+		<result column="money" property="money" />	
+	</resultMap>
+	<!-- 查询所有 -->
+	<select id="selectAll" resultMap="UserMap">
+		select * from user
+	</select>	
+	<select id="select" resultMap="UserMap">
+		select * from user
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="name!=null">
+				name=#{name}
+			</if>
+			<if test="password!=null">
+			and	password=#{password}
+			</if>
+			</trim>
+	</select>
+	<!-- 按照id查找用户 -->
+	<select id="selectById" resultMap="UserMap">
+		select * from user where
+		id=#{id};
+	</select>
+	<!--登录 -->
+	<select id="login" resultMap="UserMap">
+		select * from user
+		<trim prefix="where" prefixOverrides="and">
+			<if test="name!=null">
+				name=#{name}
+			</if>
+			<if test="password!=null">
+			and	password=#{password}
+			</if>
+			</trim>
+	</select>
+	
+</mapper>
